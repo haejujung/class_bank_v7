@@ -35,7 +35,9 @@ dependencies {
 	
 	
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// mybatis 의존성 설정 확인
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
