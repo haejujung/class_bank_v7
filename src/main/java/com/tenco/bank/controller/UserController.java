@@ -107,7 +107,7 @@ public class UserController {
 		User principal =  userService.readUser(dto);
 		
 		// 세션 메모리에 등록 처리
-		session.setAttribute("princiapl", principal);
+		session.setAttribute("principal", principal);
 		
 		// 새로운 페이지로 이동 처리
 		// TODO - 계좌 목록 페이지 이동처리 예정
