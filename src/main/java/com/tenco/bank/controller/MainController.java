@@ -36,7 +36,7 @@ public class MainController {
 		@GetMapping("/error-test1")
 		public String errorPage() {
 			if(true) {
-				throw new DataDeliveryException("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+				throw new DataDeliveryException("잘못된 요청입니다.", HttpStatus.NOT_FOUND);
 			}
 		
 			return "main";
@@ -55,7 +55,7 @@ public class MainController {
 		@GetMapping("/error-test3")
 		public String errorData3() {
 			if(true) {
-				throw new UnAuthorizedException("인증이 되지 않은 사용자 입니다.", HttpStatus.BAD_REQUEST);
+				throw new UnAuthorizedException("인증이 되지 않은 사용자 입니다.", HttpStatus.UNAUTHORIZED);
 			}
 			return "main";
 		}
