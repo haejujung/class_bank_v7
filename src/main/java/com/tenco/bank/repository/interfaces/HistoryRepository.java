@@ -2,8 +2,10 @@ package com.tenco.bank.repository.interfaces;
 
 import java.util.List;
 
-import com.tenco.bank.repository.model.History;
+import org.apache.ibatis.annotations.Mapper;
 
+import com.tenco.bank.repository.model.History;
+@Mapper
 public interface HistoryRepository {
 	
 	public int insert(History history);

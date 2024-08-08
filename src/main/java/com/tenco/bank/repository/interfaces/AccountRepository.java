@@ -14,9 +14,10 @@ public interface AccountRepository {
 	public int updateById(Account account);
 	public int deleteByID(Integer id, String name);
 	
-	// 고민 ! - 계좌 조회
-	// --> 한사람에 유저는 여러개의 계좌 번호를 가질 수 있다.
-	public List<Account> findByUserID(@Param("userId") Integer principalId);
+
+	// interface 파라미터명과 xml 에 사용할 변수명을 다르게 사용해야 된다면 @param 애노테이션을
+	// 사용할 수 있다. 그리고 2개 이상에 파라미터를 사용할 경우 반드시 사용하자 !
+	public List<Account> findByUserId(@Param("userId") Integer principalId);
 	
 	public Account findByNumber(@Param("number") String id);
 	// ---> account id 값으로 계좌 정보 조회

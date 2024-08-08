@@ -12,10 +12,9 @@
 	</insert>
 	
 	<update id="updateById">
-		update account_tb set username = #{username},
-						   	  passowrd = #{password},
-						      fullname = #{fullname},
-						      balance = #{balance},
+		update account_tb set number = #{number},
+						   	  password = #{password},
+						      balance = #{balance}
 						      where id = #{id}
 	
 	
@@ -26,12 +25,12 @@
 		
 	</delete>
 	
-	<select id="findById" resultType="com.tenco.bank.repository.model.Account">
-		select * from account_tb where userId = #{userId}
+	<select id="findByUserId" resultType="com.tenco.bank.repository.model.Account">
+		select * from account_tb where user_id = #{userId}
 		
 	</select>
 	
-	<select id="findAll" resultType="com.tenco.bank.repository.model.Account">
+	<select id="findByNumber" resultType="com.tenco.bank.repository.model.Account">
 		select * from account_tb where number = #{number}
 	
 	</select>
