@@ -24,4 +24,6 @@ public interface AccountRepository {
 	
 	public Account findByAccountId(Integer accountId);
 	
+	public int countByAccountIdAndType(@Param("type")String type, 
+			@Param("accountId")Integer accountId);
 }
