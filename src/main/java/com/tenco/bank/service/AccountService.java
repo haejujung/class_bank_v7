@@ -1,5 +1,6 @@
 package com.tenco.bank.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.tenco.bank.repository.interfaces.AccountRepository;
 import com.tenco.bank.repository.interfaces.HistoryRepository;
 import com.tenco.bank.repository.model.Account;
 import com.tenco.bank.repository.model.History;
+import com.tenco.bank.repository.model.HistoryAccount;
 import com.tenco.bank.utils.Define;
 
 @Service
@@ -193,17 +195,16 @@ public class AccountService {
 		Account withdrawEntitiy = accountRepository.findByNumber(dto.getWAccountNumber());
 		// 1
 		if (withdrawEntitiy == null) {
-			// 출금 계좌 번호가 DB 에 존재하지 않음 ! 
+			// 출금 계좌 번호가 DB 에 존재하지 않음 !
 			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.BAD_REQUEST);
 		}
 
 		// 2
 		if (depositEntitiy == null) {
-			// 입금 계좌 번호가 DB 에 존재하지 않음 ! 
+			// 입금 계좌 번호가 DB 에 존재하지 않음 !
 			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.BAD_REQUEST);
 		}
 
-		
 		// 3. 출금 계좌 본인 소유 확인 -- 객체 상태값과 세션 아이디 비교
 		withdrawEntitiy.checkOwner(principalId);
 
@@ -243,4 +244,31 @@ public class AccountService {
 
 	}
 
+	/**
+	 * 단일 계좌 조회 기능
+	 * @param accountId (px)
+	 * @return
+	 */
+	public Account readAccountByID(Integer accountId) {
+		Account accountEntity = accountRepository.findByAccountId(accountId);
+		if (accountEntity == null) {
+			throw new DataDeliveryException(Define.NOT_EXIST_ACCOUNT, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return accountEntity;
+
+	}
+
+	/**
+	 * 단일 계좌 거래 내역 조회
+	 * @param type = [all, deposit, withdrawal]
+	 * @param accountId (pk)
+	 * @return 전체, 입금, 출금 거래내역(3가지 타입) 반환
+	 */
+	// @Transactional
+	public List<HistoryAccount> readHistoryByAccountId(String type, Integer accountId){
+		List<HistoryAccount> list = new ArrayList<>();
+		list = historyRepository.findByAccountIdAndTypeOfHistory(type, accountId);
+		return list;
+		
+	}
 }
