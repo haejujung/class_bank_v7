@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.tenco.bank.dto.DepositDTO;
 import com.tenco.bank.dto.SaveDTO;
@@ -49,12 +50,6 @@ public class AccountController {
 	@GetMapping("/save")
 	public String savePage() {
 
-		// 1. 인증 검사가 필요(account 전체가 필요함)
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
-
 		return "account/save";
 	}
 
@@ -65,12 +60,11 @@ public class AccountController {
 	 */
 
 	@PostMapping("/save")
-	public String saveProc(SaveDTO dto) {
+	public String saveProc(SaveDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		// 1. form 데이터 추출 (파싱 전략)
 		// 2. 인증 검사
 		// 3. 유효성 검사
 		// 4. 서비스 호출
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
 
 		if (principal == null) {
 			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
@@ -91,7 +85,7 @@ public class AccountController {
 
 		accountService.createAccount(dto, principal.getId());
 
-		return "redirect:/index";
+		return "redirect:/account/list";
 	}
 
 	/*
@@ -99,13 +93,7 @@ public class AccountController {
 	 */
 
 	@GetMapping({ "/list", "/" })
-	public String listPage(Model model) {
-
-		// 1. 인증검사
-		User principal = (User) session.getAttribute("principal");
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+	public String listPage(Model model, @SessionAttribute(Define.PRINCIPAL) User principal) {
 
 		// 2 . 유효성 검사
 		// 3. 서비스 호출
@@ -132,24 +120,12 @@ public class AccountController {
 	@GetMapping("/withdrawal")
 	public String withdrawalPage() {
 
-		// 1. 인증검사
-		User principal = (User) session.getAttribute("principal");
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
-
 		return "account/withdrawal";
 
 	}
 
 	@PostMapping("/withdrawal")
-	public String withdrawalProc(WithdrawalDTO dto) {
-
-		// 1. 인증검사
-		User principal = (User) session.getAttribute("principal");
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+	public String withdrawalProc(WithdrawalDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 
 		// 유효성 검사 (자바 코드를 개발 ) --> 스프링 부트 @Valid 라이브러리가 존재
 		if (dto.getAmount() == null) {
@@ -179,25 +155,13 @@ public class AccountController {
 	@GetMapping("/deposit")
 	public String depositPage() {
 
-		// 1. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
-
 		return "account/deposit";
 
 	}
 	// 입금 처리 기능 만들기
 
 	@PostMapping("/deposit")
-	public String depositProc(DepositDTO dto) {
-
-		// 1. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+	public String depositProc(DepositDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 
 		// 유효성 검사 (자바 코드를 개발 ) --> 스프링 부트 @Valid 라이브러리가 존재
 		if (dto.getAmount() == null) {
@@ -217,26 +181,14 @@ public class AccountController {
 	@GetMapping("/transfer")
 	public String transferPage() {
 
-		// 1. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
-
 		return "account/transfer";
 
 	}
 	// 입금 처리 기능 만들기
 
 	@PostMapping("/transfer")
-	public String transferProc(TransferDTO dto) {
+	public String transferProc(TransferDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
 		System.out.println("들어왔니");
-
-		// 1. 인증검사
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
 
 		// 유효성 검사 (자바 코드를 개발 ) --> 스프링 부트 @Valid 라이브러리가 존재
 		if (dto.getAmount() == null) {
@@ -259,44 +211,35 @@ public class AccountController {
 	 */
 	@GetMapping("/detail/{accountId}")
 	public String detail(@PathVariable(name = "accountId") Integer accountId,
-			@RequestParam(required = false, name = "type") String type, 
-			@RequestParam(name="page", defaultValue = "1") int page, 
-			@RequestParam(name="size", defaultValue = "2") int size, 
-			
-			
-			Model model) {
-
-		// 1. 인증검사 추후 추가
-		User principal = (User) session.getAttribute(Define.PRINCIPAL);
-		if (principal == null) {
-			throw new UnAuthorizedException(Define.NOT_AN_AUTHENTICATED_USER, HttpStatus.UNAUTHORIZED);
-		}
+			@RequestParam(required = false, name = "type") String type,
+			@RequestParam(name = "page", defaultValue = "1") int page,
+			@RequestParam(name = "size", defaultValue = "2") int size, Model model) {
 
 		// 유효성 검사
 		List<String> validTypes = Arrays.asList("all", "deposit", "withdrawal");
-		
-		if(!validTypes.contains(type)) {
+
+		if (!validTypes.contains(type)) {
 			throw new DataDeliveryException("유효하지 않은 접근입니다", HttpStatus.BAD_REQUEST);
 		}
-		
+
 		// 페이지 개수를 계산하기 위해서 총 페이지 수를 계산해주어야 한다
 		int totalRecords = accountService.countHistoryByAccountIdAndType(type, accountId);
-		int totalPages = (int)Math.ceil((double)totalRecords / size);
-		
+		int totalPages = (int) Math.ceil((double) totalRecords / size);
+
 		Account account = accountService.readAccountByID(accountId);
-		List<HistoryAccount> historyList = accountService.readHistoryByAccountId(type, accountId,page ,size);
+		List<HistoryAccount> historyList = accountService.readHistoryByAccountId(type, accountId, page, size);
 
 		System.out.println("@PathVariable : " + accountId);
 		System.out.println("@RequestParam : " + type);
 
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
-		
+
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", totalPages);
 		model.addAttribute("type", type);
 		model.addAttribute("size", size);
-		
+
 		return "account/detail";
 	}
 
