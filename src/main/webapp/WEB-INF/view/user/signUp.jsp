@@ -10,13 +10,13 @@
 
 	<form action="/user/sign-up" method="post" enctype="multipart/form-data">
 		<div class="form-group">
-			<label for="username">username:</label> <input type="text" class="form-control" placeholder="Enter username" id="username" name="username">
+			<label for="username">username:</label> <input type="text" class="form-control" placeholder="Enter username" id="username" name="username" value="해주">
 		</div>
 		<div class="form-group">
-			<label for="pwd">Password:</label> <input type="password" class="form-control" placeholder="Enter password" id="pwd" name="password">
+			<label for="pwd">Password:</label> <input type="password" class="form-control" placeholder="Enter password" id="pwd" name="password" value="1234" >
 		</div>
 		<div class="form-group">
-			<label for="fullname">fullname:</label> <input type="text" class="form-control" placeholder="Enter fullname" id="fullname" name="fullname">
+			<label for="fullname">fullname:</label> <input type="text" class="form-control" placeholder="Enter fullname" id="fullname" name="fullname" value="정">
 		</div>
 		<div class="custom-file">
 			<input type="file" class="custom-file-input" id="customFile" name="mFile"> 
@@ -25,6 +25,9 @@
 	
 		<div class = "d-flex justify-content-end">
 		<button type="submit" class="btn btn-primary mt-md-4" >회원가입</button>
+		</div>
+		<div>
+			<a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=d3071232250f394d8cbfc6349a1581ee&redirect_uri=http://localhost:8080/user/kakao">  <img alt="소셜로그인이미지" src="/images/kakaologin.png"></a>
 		</div>
 	</form>
 

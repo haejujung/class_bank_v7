@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,11 @@ public class UserService {
 	private final UserRepository userRepository;
 	@Autowired
 	private final PasswordEncoder passwordEncoder;
+	
+	// 초기 파라메터 가져오는 방법
+	@Value("${file.upload-dir}")
+	private String uploadDir;
+	
 
 //	@Autowired 어노테이션으로 대체 가능하다.
 //	public UserService(UserRepository userRepository) {
@@ -48,6 +54,9 @@ public class UserService {
 		int result = 0;
 
 		System.out.println(dto.getMFile().getOriginalFilename());
+		
+		 result = userRepository.insert(dto.toUser());
+
 
 		if (!dto.getMFile().isEmpty()) {
 			// 파일 업로드 로직 구현
@@ -65,7 +74,6 @@ public class UserService {
 			System.out.println("hashPwd : " + hashPwd);
 			dto.setPassword(hashPwd);
 
-			 result = userRepository.insert(dto.toUser());
 
 		} catch (DataAccessException e) {
 			throw new DataDeliveryException("잘못된 처리입니다, 중복 이름을 사용 할 수 없습니다. ", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,17 +125,17 @@ public class UserService {
 			throw new DataDeliveryException("파일 크기는 20MB 이상 클 수 없습니다", HttpStatus.BAD_REQUEST);
 		}
 
-		// 서버 컴퓨터에 파일을 넣을 디렉토리가 있는지 검사
-		String saveDirectory = Define.UPLOAD_FILE_DERECTORY;
-		File directory = new File(saveDirectory);
-		if (directory.exists()) {
-			directory.mkdirs();
-		}
+		// 코드 수정
+		// File - getAbsolutePath() : 파일 시스템의 절대 경로를 나타냅니다.
+		// (리눅스 또는 MacOS)에 맞춰서 절대 경로를 생성 시킬 수 있다.
+		String saveDirectory = uploadDir;
+		System.out.println("saveDirectory : " + saveDirectory);
+
 
 		// 파일 이름 생성(중복 이름 예방)
 		String uploadFileName = UUID.randomUUID() + "_" + mFile.getOriginalFilename();
 		// 파일 전체경로 + 새로생성한 파일명
-		String uploadPath = saveDirectory + File.separator +uploadFileName;
+		String uploadPath = saveDirectory + File.separator + uploadFileName;
 		System.out.println("-------------------------");
 		File destination = new File(uploadPath);
 		System.out.println("-------------------------");

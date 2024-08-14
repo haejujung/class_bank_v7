@@ -188,8 +188,6 @@ public class AccountController {
 
 	@PostMapping("/transfer")
 	public String transferProc(TransferDTO dto, @SessionAttribute(Define.PRINCIPAL) User principal) {
-		System.out.println("들어왔니");
-
 		// 유효성 검사 (자바 코드를 개발 ) --> 스프링 부트 @Valid 라이브러리가 존재
 		if (dto.getAmount() == null) {
 			throw new DataDeliveryException(Define.ENTER_YOUR_BALANCE, HttpStatus.BAD_REQUEST);
@@ -229,12 +227,8 @@ public class AccountController {
 		Account account = accountService.readAccountByID(accountId);
 		List<HistoryAccount> historyList = accountService.readHistoryByAccountId(type, accountId, page, size);
 
-		System.out.println("@PathVariable : " + accountId);
-		System.out.println("@RequestParam : " + type);
-
 		model.addAttribute("account", account);
 		model.addAttribute("historyList", historyList);
-
 		model.addAttribute("currentPage", page);
 		model.addAttribute("totalPages", totalPages);
 		model.addAttribute("type", type);
