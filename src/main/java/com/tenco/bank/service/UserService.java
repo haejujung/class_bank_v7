@@ -31,11 +31,10 @@ public class UserService {
 	private final UserRepository userRepository;
 	@Autowired
 	private final PasswordEncoder passwordEncoder;
-	
+
 	// 초기 파라메터 가져오는 방법
 	@Value("${file.upload-dir}")
 	private String uploadDir;
-	
 
 //	@Autowired 어노테이션으로 대체 가능하다.
 //	public UserService(UserRepository userRepository) {
@@ -53,12 +52,11 @@ public class UserService {
 	public void createUser(SignUpDTO dto) {
 		int result = 0;
 
-		System.out.println(dto.getMFile().getOriginalFilename());
-		
-		 result = userRepository.insert(dto.toUser());
+//		System.out.println(dto.getMFile().getOriginalFilename());
 
+		result = userRepository.insert(dto.toUser());
 
-		if (!dto.getMFile().isEmpty()) {
+		if (dto.getMFile() != null && !dto.getMFile().isEmpty()) {
 			// 파일 업로드 로직 구현
 			String[] filenames = uploadFile(dto.getMFile());
 
@@ -73,7 +71,6 @@ public class UserService {
 			String hashPwd = passwordEncoder.encode(dto.getPassword());
 			System.out.println("hashPwd : " + hashPwd);
 			dto.setPassword(hashPwd);
-
 
 		} catch (DataAccessException e) {
 			throw new DataDeliveryException("잘못된 처리입니다, 중복 이름을 사용 할 수 없습니다. ", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -131,7 +128,6 @@ public class UserService {
 		String saveDirectory = uploadDir;
 		System.out.println("saveDirectory : " + saveDirectory);
 
-
 		// 파일 이름 생성(중복 이름 예방)
 		String uploadFileName = UUID.randomUUID() + "_" + mFile.getOriginalFilename();
 		// 파일 전체경로 + 새로생성한 파일명
@@ -139,7 +135,7 @@ public class UserService {
 		System.out.println("-------------------------");
 		File destination = new File(uploadPath);
 		System.out.println("-------------------------");
-		
+
 		// 반드시 수행
 		try {
 			mFile.transferTo(destination);
@@ -152,4 +148,13 @@ public class UserService {
 
 	}
 
+	/**
+	 * username 사용자 존재 여부 조회
+	 * 
+	 * @param String username
+	 * @return User, null
+	 */
+	public User searchUsername(String username) {
+		return userRepository.findByUsername(username);
+	}
 }

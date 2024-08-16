@@ -23,11 +23,15 @@ public class User {
 	private Timestamp createdAt;
 	
 	public String setUpUserImage() {
-		
-		return uploadFileName == null ?
-				"https://picsum.photos/id/1/350" : "/images/uploads/" + uploadFileName;
-		
-		
-	}
+        System.out.println("파일 이름 : " + uploadFileName);
+        String image = null;
 
+        if(originFileName != null && uploadFileName == null) {
+            image = originFileName;
+        } else {
+            image = uploadFileName == null ? 
+                    "https://picsum.photos/id/1/350" : "/images/uploads/" + uploadFileName;
+        }
+        return image;
+    }
 }

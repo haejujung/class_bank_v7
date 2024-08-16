@@ -58,7 +58,7 @@
 				<!-- 1. 로그인 유무 확인 -->
 				<c:choose>
 					<c:when test="${principal != null }">
-						<img class="m--profile" alt="" src="${principal.setUpUserImage()}">
+						<img class="m--profile" alt="" src="${principal.setUpUserImage()}" style="width:350px">
 					</c:when>
 					
 					<c:otherwise>
